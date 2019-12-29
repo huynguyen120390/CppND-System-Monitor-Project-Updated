@@ -138,10 +138,50 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 // TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+int LinuxParser::TotalProcesses() { 
+  string key;
+  string value;
+  string line;
+  int processNum;
+  bool not_done = true;
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if(filestream.is_open()){
+    while(std::getline(filestream,line) && not_done){
+      std::istringstream linestream(line);
+      while(linestream >> key >> value){
+        //cout << key << value<<endl;
+        if(key == "processes"){
+          processNum = stoi(value);
+          not_done = false;
+        }
+      }
+    }
+  }
+  return processNum; 
+}
 
 // TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+int LinuxParser::RunningProcesses() { 
+  string key;
+  string value;
+  string line;
+  int runningProcessNum;
+  bool not_done = true;
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if(filestream.is_open()){
+    while(std::getline(filestream,line) && not_done){
+      std::istringstream linestream(line);
+      while(linestream >> key >> value){
+        if(key == "procs_running"){
+          runningProcessNum = stoi(value);
+          not_done = false;
+        }
+      }
+
+    }
+  }
+  return runningProcessNum; 
+}
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
@@ -169,9 +209,11 @@ int main(){
   //cout << "Operating System : " << LinuxParser::OperatingSystem() << endl;
   //cout << "MemoryUtilization : " << LinuxParser::MemoryUtilization() << endl;
   //cout << "UpTime : " << LinuxParser::UpTime() << endl;
+  //cout << "Total Processes : " << LinuxParser::TotalProcesses() << endl;
 
   //UNDERTEST
-  cout << "Total Processes : " << LinuxParser::TotalProcesses() << endl;
+  cout << "Running Processes : " << LinuxParser::RunningProcesses() << endl;
+  
   
   
 }
