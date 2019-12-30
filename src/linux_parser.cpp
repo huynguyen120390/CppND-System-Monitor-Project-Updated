@@ -122,14 +122,46 @@ long LinuxParser::UpTime() {
 }
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+long LinuxParser::Jiffies() { 
+  string line;
+  string userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS;
+  long userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, questJ, guestNiceJ;
+
+
+  
+  return 0; 
+}
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+long LinuxParser::ActiveJiffies() {
+  string line;
+  string key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
+  long activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, guestJ, guestNiceJ; //long type jiffies
+
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if(filestream.is_open()){
+    std::getline(filestream,line);
+    std::istringstream linestream(line);
+    while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
+      userJ = stoi(userS);
+      niceJ = stoi(niceS);
+      systemJ = stoi(systemS);
+      idleJ = stoi(idleS);
+      iowaitJ = stoi(iowaitS);
+      irqJ = stoi(irqS);
+      softirqJ = stoi(softirqS);
+      stealJ = stoi(stealS);
+      guestJ = stoi(guestS);
+      guestNiceJ = stoi(guestNiceS);
+    }
+  }
+  activeJiffies = userJ + niceJ + systemJ + irqJ + softirqJ + stealJ + guestJ + guestNiceJ;
+  return activeJiffies;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
@@ -210,10 +242,12 @@ int main(){
   //cout << "MemoryUtilization : " << LinuxParser::MemoryUtilization() << endl;
   //cout << "UpTime : " << LinuxParser::UpTime() << endl;
   //cout << "Total Processes : " << LinuxParser::TotalProcesses() << endl;
+  //cout << "Running Processes : " << LinuxParser::RunningProcesses() << endl;
 
   //UNDERTEST
-  cout << "Running Processes : " << LinuxParser::RunningProcesses() << endl;
-  
-  
-  
+  //cout << "Active Jiffies" << LinuxParser::ActiveJiffies() << endl;
+
+
+  //UNDERIMPLEMTATION
+
 }
