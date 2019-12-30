@@ -125,18 +125,26 @@ long LinuxParser::UpTime() {
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { 
-  string line;
-  string userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS;
-  long userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, questJ, guestNiceJ;
-
-
-  
-  return 0; 
+  long active = LinuxParser::ActiveJiffies() ;
+  long idle =  LinuxParser::IdleJiffies(); 
+  return active + idle;
 }
 
 // TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::ActiveJiffies(int pid) { 
+  std::ifstream filestream(kProcDirectory + "/" + to_string(pid) + kStatFilename);
+  vector <long> values;
+  string line,value;
+
+  if(filestream.is_open()){
+    std::getline(filestream,line);
+    std::stringstream linestream(line);
+    while(std::getline(linestream,value,' ')){
+      values.push_back(stof(value));
+    }
+  }
+  return values[13] + values[14] + values[15] + values[16];
+}
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
@@ -149,14 +157,14 @@ long LinuxParser::ActiveJiffies() {
     std::getline(filestream,line);
     std::istringstream linestream(line);
     while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
-      userJ = stoi(userS);
-      niceJ = stoi(niceS);
-      systemJ = stoi(systemS);
+      userJ = stof(userS);
+      niceJ = stof(niceS);
+      systemJ = stof(systemS);
       //idleJ = stoi(idleS);   //Idle
       //iowaitJ = stoi(iowaitS);  //Idle
-      irqJ = stoi(irqS);
-      softirqJ = stoi(softirqS);
-      stealJ = stoi(stealS);
+      irqJ = stof(irqS);
+      softirqJ = stof(softirqS);
+      stealJ = stof(stealS);
       //guestJ = stoi(guestS);   //Virtual
       //guestNiceJ = stoi(guestNiceS);  //Virtual
     }
@@ -176,8 +184,8 @@ long LinuxParser::IdleJiffies() {
     std::getline(filestream,line);
     std::istringstream linestream(line);
     while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
-      idleJ = stoi(idleS);
-      iowaitJ = stoi(iowaitS);
+      idleJ = stof(idleS);
+      iowaitJ = stof(iowaitS);
     }
   }
   idleJiffies = idleJ + iowaitJ;
@@ -186,7 +194,9 @@ long LinuxParser::IdleJiffies() {
 
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() { 
+  return {};
+}
 
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
@@ -310,7 +320,6 @@ string LinuxParser::User(int pid) {
 }
 
 // TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) { 
   std::ifstream filestream(kProcDirectory + "/" + to_string(pid) + kStatFilename);
   vector <string> values;
@@ -327,7 +336,7 @@ long LinuxParser::UpTime(int pid) {
 }
 
 
-int main(){
+//int main(){
   //PASSED
   //cout << "Operating System : " << LinuxParser::OperatingSystem() << endl;
   //cout << "MemoryUtilization : " << LinuxParser::MemoryUtilization() << endl;
@@ -338,7 +347,7 @@ int main(){
   //cout << "RAM for PID :" << LinuxParser::Ram(2497) << endl; 
   //cout << "UID " << LinuxParser::Uid(2497) << endl;
   //cout<< "User Name" << LinuxParser::User(2497) << endl;
-  cout << LinuxParser::UpTime(2145);
+  //cout << LinuxParser::UpTime(2145);
 
 
   //UNDERTEST
@@ -354,4 +363,4 @@ int main(){
   
   
 
-}
+//}

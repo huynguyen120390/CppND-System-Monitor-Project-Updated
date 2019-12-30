@@ -4,12 +4,17 @@
 #include <string>
 #include <vector>
 
-#include "process.h"
+//#include "process.h"
+#include "../include/process.h"
+#include "../include/linux_parser.h"
+#include <iostream>
+using namespace std;
+
 
 using std::string;
 using std::to_string;
 using std::vector;
-using namespace LinuxParser;
+
 
 // TODO: Return this process's ID
 int Process::Pid() { 
@@ -20,8 +25,8 @@ int Process::Pid() {
 float Process::CpuUtilization() { return 0; }
 
 // TODO: Return the command that generated this process
-string Process::Command() { 
-    this->cmd = LinuxParser::Command(pid);;
+string Process::Command() {
+    this->cmd = LinuxParser::Command(this->pid);;
     return this-> cmd;
 }
 
@@ -33,7 +38,7 @@ string Process::Ram() {
 
 // TODO: Return the user (name) that generated this process
 string Process::User() { 
-    this->user = LinuxParser::
+    this->user = LinuxParser::User(this->pid);
     return this->user;
 }
 
@@ -47,5 +52,11 @@ long int Process::UpTime() {
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
 
-
-#endif
+// int main(){
+//     Process proc(2145);
+//     cout << proc.Pid() << endl;
+//     cout << proc.Command() << endl;
+//     cout << proc.Ram() << endl;
+//     cout << proc.User() << endl;
+//     cout << proc.UpTime() << endl;
+// }
