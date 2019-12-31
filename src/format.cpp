@@ -15,7 +15,7 @@ string Format::ElapsedTime(long seconds) {
     string time ;
 
     hour = seconds/3600;
-    min =  (seconds/3600.0 - hour)*60;
+    min =  (long)((seconds/3600.0 - hour)*60);
     sec =  seconds - min*60 - hour*3600;
     time = to_string(hour) + ":" + to_string(min) + ":" + to_string(sec);
     return time;

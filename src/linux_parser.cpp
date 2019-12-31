@@ -152,7 +152,7 @@ long LinuxParser::ActiveJiffies(int pid) {
 long LinuxParser::ActiveJiffies() {
   string line;
   string key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
-  long activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, guestJ, guestNiceJ; //long type jiffies
+  long activeJiffies,userJ,niceJ, systemJ, irqJ, softirqJ, stealJ; //long type jiffies
 
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if(filestream.is_open()){
@@ -261,7 +261,7 @@ vector<vector<long double>> CpuUtilizationHelper(){
     string line;
     string utilS, key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
     
-    long double idleJiffies,activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ; //long type jiffies
+    long double idleJiffies,activeJiffies; //long type jiffies
     string coreId;
     vector<long double> actives;
     vector<long double> idles;
@@ -470,7 +470,7 @@ long int LinuxParser::UpTime(int pid) {
   seconds = uptime - (startTime/hertz);
 
   filestream.close();
-  return (long int) stold(values[21])/hertz;
+  return seconds;
 }
 
 void test_commands(){
