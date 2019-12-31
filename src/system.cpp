@@ -47,12 +47,13 @@ void sort_processes(vector<Process>& processes){
 
 vector<Process>& System::Processes() { 
     vector<int> pids =  LinuxParser::Pids();
-    this->processes_ = {};
+    vector<Process> processes = {};
     for(auto p : pids){
         Process proc(p);
-        this->processes_.push_back(proc);
+        processes.push_back(proc);
     }
-    sort_processes(this->processes_);
+    sort_processes(processes);
+    this->processes_ = processes;
     return this->processes_; 
 }
 

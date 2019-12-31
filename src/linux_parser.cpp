@@ -253,24 +253,29 @@ long LinuxParser::IdleJiffies() {
 }
 
 long double LinuxParser::CpuUtilization(int pid){
-  std::ifstream filestream(kProcDirectory + "/" + to_string(pid) + kStatFilename);
-  vector <string> values;
-  string line,value;
-  long double totalTime, startTime, seconds,hertz,uptime;
   long double cpu_usage;
-  if(filestream.is_open()){
-    std::getline(filestream,line);
-    std::stringstream linestream(line);
-    while(std::getline(linestream,value,' ')){
-      values.push_back(value);
+  if(is_runningPid(pid)){
+    std::ifstream filestream(kProcDirectory + "/" + to_string(pid) + kStatFilename);
+    vector <string> values;
+    string line,value;
+    long double totalTime, startTime, seconds,hertz,uptime;
+    
+    if(filestream.is_open()){
+      std::getline(filestream,line);
+      std::stringstream linestream(line);
+      while(std::getline(linestream,value,' ')){
+        values.push_back(value);
+      }
     }
+    uptime = (long double)LinuxParser::UpTime();
+    hertz = sysconf(_SC_CLK_TCK);
+    totalTime = stold(values[13]) + stold(values[14]) + stold(values[15]) + stold(values[16]); //utime + stime + cutime+ cstime
+    startTime = stold(values[21]);
+    seconds = uptime - (startTime/hertz);
+    cpu_usage = ((totalTime/hertz)/seconds);
+  }else{
+    cpu_usage = 0.0;
   }
-  uptime = (long double)LinuxParser::UpTime();
-  hertz = sysconf(_SC_CLK_TCK);
-  totalTime = stold(values[13]) + stold(values[14]) + stold(values[15]) + stold(values[16]); //utime + stime + cutime+ cstime
-  startTime = stold(values[21]);
-  seconds = uptime - (startTime/hertz);
-  cpu_usage = ((totalTime/hertz)/seconds);
   return cpu_usage;
 }
 
@@ -293,7 +298,8 @@ vector<string> LinuxParser::CpuUtilization() {
     utilizations.push_back(to_string(ratio));
   }
   return utilizations;
-}
+} 
+
 
 
 long double LinuxParser::calc_activeTime(string userS, string niceS, string systemS, string irqS, string softirqS, string stealS){
@@ -386,7 +392,7 @@ string LinuxParser::Ram(int pid) {
       }
     }
   }else{
-    value = "-";
+    value = "0";
   }
   return value; 
 }
@@ -412,7 +418,7 @@ string LinuxParser::Uid(int pid) {
       }
     }
   }else{
-    uid = '-';
+    uid = '0';
   }
   return uid;
 }
