@@ -104,6 +104,7 @@ float LinuxParser::MemoryUtilization() {
     }
 
   }
+  filestream.close();
   return (totalMem - freeMem)/totalMem;
 }
 
@@ -121,6 +122,7 @@ long LinuxParser::UpTime() {
       uptime = stof(uptimeString);
     }
   }
+  filestream.close();
   return uptime; 
 }
 
@@ -177,7 +179,7 @@ long LinuxParser::ActiveJiffies() {
 long LinuxParser::IdleJiffies() { 
   string line;
   string key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
-  long idleJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, guestJ, guestNiceJ; //long type jiffies
+  long idleJiffies, idleJ, iowaitJ; //long type jiffies
 
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if(filestream.is_open()){
@@ -453,6 +455,7 @@ long int LinuxParser::UpTime(int pid) {
   std::ifstream filestream(kProcDirectory + "/" + to_string(pid) + kStatFilename);
   vector <string> values;
   string line,value;
+  long int uptime, startTime,hertz,seconds;
 
   if(filestream.is_open()){
     std::getline(filestream,line);
@@ -461,7 +464,13 @@ long int LinuxParser::UpTime(int pid) {
       values.push_back(value);
     }
   }
-  return (long int) stold(values[21])/sysconf(_SC_CLK_TCK);
+  uptime = (long int)LinuxParser::UpTime();
+  startTime = (long int)stold(values[21]);
+  hertz = sysconf(_SC_CLK_TCK);
+  seconds = uptime - (startTime/hertz);
+
+  filestream.close();
+  return (long int) stold(values[21])/hertz;
 }
 
 void test_commands(){
