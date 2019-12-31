@@ -2,7 +2,7 @@
 
 Project Demo Image
 
-![System Monitor Demo](images/"Screenshot from 2019-12-31 14-28-18.png")
+![System Monitor Demo](images/demo.png)
 
 Starter code for System Monitor Project in the Object Oriented Programming Course of the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). 
 
