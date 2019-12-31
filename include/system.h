@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "process.h"
-#include "processor.h"
+#include "../include/process.h"
+#include "../include/processor.h"
 
 class System {
  public:
@@ -20,7 +20,7 @@ class System {
 
   // TODO: Define any necessary private members
  private:
-  Processor cpu_ = {};
+  Processor cpu_;
   std::vector<Process> processes_ = {};
 };
 

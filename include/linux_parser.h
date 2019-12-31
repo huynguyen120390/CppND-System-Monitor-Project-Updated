@@ -26,6 +26,9 @@ int TotalProcesses();
 int RunningProcesses();
 std::string OperatingSystem();
 std::string Kernel();
+long calc_activeTime(std::string userS, std::string niceS, std::string systemS, std::string irqS, std::string softirqS, std::string stealS);
+long calc_idleTime(std::string idleS, std::string iowaitS);
+
 
 // CPU
 enum CPUStates {
@@ -52,6 +55,7 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+long double CpuUtilization(int pid);
 };  // namespace LinuxParser
 
 #endif
