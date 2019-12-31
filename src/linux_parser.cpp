@@ -279,7 +279,7 @@ vector<vector<long double>> CpuUtilizationHelper(){
             idleJiffies = LinuxParser::calc_idleTime(idleS,iowaitS);
             actives.push_back(activeJiffies);
             idles.push_back(idleJiffies);
-            cout << "Adding cpu "<< coreId << " ative :" << activeJiffies << " idle:"  << idleJiffies << endl;
+           // cout << "Adding cpu "<< coreId << " ative :" << activeJiffies << " idle:"  << idleJiffies << endl;
           }
         }
       }
@@ -297,7 +297,7 @@ vector<string> LinuxParser::CpuUtilization() {
   long double active0,active1,idle0,idle1,total0,total1,ratio;
  
   jiffies0 = CpuUtilizationHelper();// actives & idles at time 0
-  usleep(50000);
+  usleep(500000);
   jiffies1 = CpuUtilizationHelper();// actives & idles at time 1
  // cout << "Cpu number " << jiffies1[0].size() << endl;
   //cout <<"Calculating:"<<endl;
