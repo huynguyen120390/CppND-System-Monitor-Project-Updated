@@ -1,6 +1,6 @@
 # CppND-System-Monitor
 
-Project Demo Image
+Huy's Project Demo Image
 
 ![System Monitor Demo](images/demo.png)
 
