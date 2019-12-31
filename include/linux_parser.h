@@ -28,7 +28,8 @@ std::string OperatingSystem();
 std::string Kernel();
 long double calc_activeTime(std::string userS, std::string niceS, std::string systemS, std::string irqS, std::string softirqS, std::string stealS);
 long double calc_idleTime(std::string idleS, std::string iowaitS);
-
+bool is_runningPid(int pid);
+std::vector<std::vector<long double>> CpuUtilizationHelper();
 
 // CPU
 enum CPUStates {
