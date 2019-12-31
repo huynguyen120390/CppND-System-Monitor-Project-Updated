@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+
 //#include "linux_parser.h"
 //>>>> 
 #include "../include/linux_parser.h"
@@ -215,51 +216,116 @@ long double LinuxParser::CpuUtilization(int pid){
   totalTime = stold(values[13]) + stold(values[14]) + stold(values[15]) + stold(values[16]); //utime + stime + cutime+ cstime
   startTime = stold(values[21]);
   seconds = uptime - (startTime/hertz);
-  cpu_usage = 100*((totalTime/hertz)/seconds);
-  //cout << totalTime <<" "<< uptime <<" " << hertz<<" "<<startTime<<" "<<seconds<< endl;
-  return (long double) cpu_usage;
+  cpu_usage = ((totalTime/hertz)/seconds);
+  return cpu_usage;
 }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { 
-  string line;
-  string percentage, key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
-  long double idleJiffies,activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, guestJ, guestNiceJ; //long type jiffies
-  string coreId;
-  vector<string> percentages;
+// vector<string> LinuxParser::CpuUtilization() { 
+//   string line;
+//   string utilS, key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
+//   long double utilD,idleJiffies,activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ, guestJ, guestNiceJ; //long type jiffies
+//   string coreId;
+//   vector<string> utilizationsS;
+//   vectpr<long double> utilizationsD; 
 
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  if(filestream.is_open()){
-    //std::getline(filestream,line); //ignore first line
-    while(std::getline(filestream,line)){
-      std::istringstream linestream(line);
-      while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
-        if(key.substr(0,3) == "cpu"){
-          coreId = key.substr(3);
-          activeJiffies = LinuxParser::calc_activeTime(userS,niceS,systemS,irqS,softirqS,stealS);
-          idleJiffies = LinuxParser::calc_idleTime(idleS,iowaitS);
-          percentage = to_string(activeJiffies/idleJiffies);
-        //  cout << "CPU" << coreId << ": ";
-        //   cout <<" A" << activeJiffies;
-        //   cout <<",I" << idleJiffies;
-        //   cout <<",P" << percentage <<endl;
+//   std::ifstream filestream(kProcDirectory + kStatFilename);
+//   if(filestream.is_open()){
+//     //std::getline(filestream,line); //ignore first line
+//     while(std::getline(filestream,line)){
+//       std::istringstream linestream(line);
+//       while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
+//         if(key.substr(0,3) == "cpu"){
+//           coreId = key.substr(3);
+//           activeJiffies = LinuxParser::calc_activeTime(userS,niceS,systemS,irqS,softirqS,stealS);
+//           idleJiffies = LinuxParser::calc_idleTime(idleS,iowaitS);
+//           utilD = activeJiffies/idleJiffies);
+//         //  cout << "CPU" << coreId << ": ";
+//         //   cout <<" A" << activeJiffies;
+//         //   cout <<",I" << idleJiffies;
+//         //   cout <<",P" << percentage <<endl;
 
-          percentages.push_back(percentage);
+//           percentages.push_back(percentage);
+//         }
+//       }
+//     }
+//   }
+
+  
+//   return percentages;
+// }
+
+vector<vector<long double>> CpuUtilizationHelper(){
+    string line;
+    string utilS, key, userS, niceS, systemS,idleS,iowaitS, irqS, softirqS, stealS, guestS, guestNiceS; // string type jiffies
+    
+    long double idleJiffies,activeJiffies,userJ,niceJ, systemJ, idleJ, iowaitJ,irqJ, softirqJ, stealJ; //long type jiffies
+    string coreId;
+    vector<long double> actives;
+    vector<long double> idles;
+    vector<vector<long double>> jiffies;
+    
+
+
+    std::ifstream filestream(LinuxParser::kProcDirectory + LinuxParser::kStatFilename);
+    if(filestream.is_open()){
+      //std::getline(filestream,line); //ignore first line
+      while(std::getline(filestream,line)){
+        std::istringstream linestream(line);
+        while(linestream >> key >> userS >> niceS >> systemS >> idleS >> iowaitS >> irqS >> softirqS >> stealS >> guestS >> guestNiceS){
+          if(key.substr(0,3) == "cpu"){
+            coreId = key.substr(3);
+            activeJiffies = LinuxParser::calc_activeTime(userS,niceS,systemS,irqS,softirqS,stealS);
+            idleJiffies = LinuxParser::calc_idleTime(idleS,iowaitS);
+            actives.push_back(activeJiffies);
+            idles.push_back(idleJiffies);
+            cout << "Adding cpu "<< coreId << " ative :" << activeJiffies << " idle:"  << idleJiffies << endl;
+          }
         }
       }
     }
+    jiffies.push_back(actives);
+    jiffies.push_back(idles);
+
+    return jiffies;
+}
+
+vector<string> LinuxParser::CpuUtilization() { 
+ 
+  vector<string> utilizations;
+  vector<vector<long double>> jiffies0,jiffies1;
+  long double active0,active1,idle0,idle1,total0,total1,ratio;
+ 
+  jiffies0 = CpuUtilizationHelper();// actives & idles at time 0
+  usleep(50000);
+  jiffies1 = CpuUtilizationHelper();// actives & idles at time 1
+ // cout << "Cpu number " << jiffies1[0].size() << endl;
+  //cout <<"Calculating:"<<endl;
+  for(size_t i = 0; i < jiffies1[0].size(); i++){
+    active0 = jiffies0[0][i]; 
+    active1 = jiffies1[0][i];
+    idle0   = jiffies0[1][i];
+    idle1   = jiffies1[1][i];
+    total0  = active0 + idle0;
+    total1  = active1 + idle1;
+    ratio = (active1 - active0)/(total1 - total0);
+    //cout <<"Active"<< active0 << " " << active1 << endl;
+    //cout <<"Idle  "<<idle0 << " "<< idle1<<endl;
+    //cout <<"Total "<<total0 <<" "<< total1<<endl;
+    //cout <<"Ratio "<<ratio <<endl;
+    
+    utilizations.push_back(to_string(ratio));
   }
-
-  
-  return percentages;
+  return utilizations;
 }
 
-long LinuxParser::calc_activeTime(string userS, string niceS, string systemS, string irqS, string softirqS, string stealS){
-  return stof(userS) + stof(niceS) + stof(systemS) + stof(irqS) + stof(softirqS) + stof(stealS);
+
+long double LinuxParser::calc_activeTime(string userS, string niceS, string systemS, string irqS, string softirqS, string stealS){
+  return stold(userS) + stold(niceS) + stold(systemS) + stold(irqS) + stold(softirqS) + stold(stealS);
 }
 
-long LinuxParser::calc_idleTime(string idleS, string iowaitS){
-  return stof(idleS) + stof(iowaitS);
+long double LinuxParser::calc_idleTime(string idleS, string iowaitS){
+  return stold(idleS) + stold(iowaitS);
 }
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
@@ -425,7 +491,7 @@ void test_ram(){
 //   //cout << "Total Processes : " << LinuxParser::TotalProcesses() << endl;
 //   //cout << "Running Processes : " << LinuxParser::RunningProcesses() << endl;
 //   //test_user();
-//   test_ram();
+//   //test_ram();
   
 //   //cout << "RAM for PID :" << LinuxParser::Ram(2497) << endl; 
 //   //cout << LinuxParser::UpTime(2145);
@@ -441,10 +507,10 @@ void test_ram(){
 
 //   //UNDERIMPLEMTATION
 
-//   // cout << "Utilization " << endl;
-//   // vector<string> percent = LinuxParser::CpuUtilization();
-//   // for(auto v:percent){
-//   //   cout << v << endl;
-//   // }
+//   cout << "Utilization " << endl;
+//   vector<string> percent = LinuxParser::CpuUtilization();
+//   for(auto v:percent){
+//     cout << v << endl;
+//   }
   
 // }

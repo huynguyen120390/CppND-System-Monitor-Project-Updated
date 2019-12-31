@@ -47,6 +47,7 @@ void sort_processes(vector<Process>& processes){
 
 vector<Process>& System::Processes() { 
     vector<int> pids =  LinuxParser::Pids();
+    this->processes_ = {};
     for(auto p : pids){
         Process proc(p);
         this->processes_.push_back(proc);
@@ -93,10 +94,10 @@ long System::UpTime() {
 //     System sys;
 // //    cout << sys.Cpu().Utilization() << endl;
     
-// //     for(auto p : sys.Processes()){
-// //         cout << p.Pid() <<":" <<p.Ram() << endl;
-// //     }
-// //     cout << endl;
+//     for(auto p : sys.Processes()){
+//         cout << p.Pid() <<":" <<p.Ram() << endl;
+//     }
+//     cout << endl;
 
 // //     cout << sys.TotalProcesses() << endl;
 // //     cout << sys.RunningProcesses() << endl;
@@ -104,5 +105,5 @@ long System::UpTime() {
 // //     cout << sys.MemoryUtilization() << endl;
 // //     cout << sys.Kernel() << endl;
 
-//     cout << Format::ElapsedTime(sys.UpTime()) << endl;
+//  //   cout << Format::ElapsedTime(sys.UpTime()) << endl;
 // }
