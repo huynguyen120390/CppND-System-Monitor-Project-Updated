@@ -34,6 +34,7 @@ void swap(Process * p1, Process * p2){
     *p1 = *p2;
     *p2 = temp;
 }
+
 void sort_processes(vector<Process>& processes){
     int size = processes.size();
     for(int i = 0; i < size ; i++ ){

@@ -4,6 +4,8 @@
 #include <fstream>
 #include <regex>
 #include <string>
+#define WAIT_SLEEP 500000 //0.5s gapbetween 2 times of collecting jiffies 
+#define ONE_KB 1024 
 
 namespace LinuxParser {
 // Paths

@@ -26,6 +26,3 @@ string Format::ElapsedTime(long seconds) {
     time = hourS + ":" + minS + ":" + secS + '\n' ;
     return time;
 }
-// int main(){
-//      cout << Format::ElapsedTime(5404);
-// }
