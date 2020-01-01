@@ -61,19 +61,11 @@ long int Process::UpTime() {
 //Overload the "less than" comparison operator for Process objects
 //Compare about RAM usage
 bool Process::operator<(const Process& a) const { 
-    long double procMem = stold(this->mem);
-    long double procaMem = stold(a.mem);
+    const long double procMem = stold(this->mem);
+    const long double procaMem = stold(a.mem);
     if (procMem < procaMem){
        return true;
     }
     return false;
 }
 
-
-void test_operatorless(int pid1, int pid2){
-    Process p(pid1);
-    Process p2(pid2);
-    cout << p.Ram() << endl;
-    cout << p2.Ram() << endl;
-    cout << (p < p2) << endl;
-}
